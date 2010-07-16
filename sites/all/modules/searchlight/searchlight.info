@@ -1,0 +1,6 @@
+core = "6.x"
+dependencies[] = "ctools"
+dependencies[] = "views"
+description = "Views-driven search API with pluggable search backends."
+name = "Searchlight"
+package = "Search"

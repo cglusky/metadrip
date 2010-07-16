@@ -1,0 +1,149 @@
+<?php
+
+/**
+ * Implementation of hook_schema().
+ */
+function searchlight_schema() {
+  $schema = array();
+  $schema['searchlight_datasource'] = array(
+    'description' => t('Storage for Searchlight datasource configuration.'),
+    'export' => array(
+      'key' => 'name',
+      'object' => 'SearchlightDatasource',
+      'identifier' => 'searchlight_datasource',
+      'default hook' => 'searchlight_default_datasources',
+      'api' => array(
+        'owner' => 'searchlight',
+        'api' => 'datasource', // Base name for api include files.
+        'minimum_version' => 1,
+        'current_version' => 1,
+      ),
+    ),
+    'fields' => array(
+      'name' => array(
+        'description' => 'The primary identifier for a datasource.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'base_table' => array(
+        'description' => 'The base table for this datasource.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'fields' => array(
+        'description' => 'Serialized storage of datasource field settings.',
+        'type' => 'text',
+        'serialize' => TRUE,
+      ),
+      'filters' => array(
+        'description' => 'Serialized storage of datasource filter settings.',
+        'type' => 'text',
+        'serialize' => TRUE,
+      ),
+      'options' => array(
+        'description' => 'Serialized storage of other datasource options.',
+        'type' => 'text',
+        'serialize' => TRUE,
+      ),
+    ),
+    'primary key' => array('name'),
+  );
+  $schema['searchlight_environment'] = array(
+    'description' => t('Storage for Searchlight environment configuration.'),
+    'export' => array(
+      'key' => 'name',
+      'object' => 'SearchlightEnvironment',
+      'identifier' => 'searchlight_environment',
+      'default hook' => 'searchlight_default_environments',
+      'api' => array(
+        'owner' => 'searchlight',
+        'api' => 'environment', // Base name for api include files.
+        'minimum_version' => 1,
+        'current_version' => 1,
+      ),
+    ),
+    'fields' => array(
+      'name' => array(
+        'description' => 'The primary identifier for an environment.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'view_display' => array(
+        'description' => 'The view/display combination for which this environment is used.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'facets' => array(
+        'description' => 'Serialized storage of environment facet settings.',
+        'type' => 'text',
+        'serialize' => TRUE,
+      ),
+      'options' => array(
+        'description' => 'Serialized storage of other environment options.',
+        'type' => 'text',
+        'serialize' => TRUE,
+      ),
+    ),
+    'primary key' => array('name'),
+  );
+  $schema['searchlight_search'] = array(
+    'description' => t('Stores a record of an items status in the index.'),
+    'fields' => array(
+      'type' => array(
+        'description' => t('The type of item.'),
+        'type' => 'varchar',
+        'length' => '128',
+        'not null' => TRUE
+      ),
+      'id' => array(
+        'description' => t('The primary identifier for an item.'),
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE
+      ),
+      'status' => array(
+        'description' => t('Boolean indicating whether the item should be available in the index.'),
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0
+      ),
+    ),
+    'indexes' => array(
+      'status' => array('status'),
+    ),
+    'primary key' => array('type, id'),
+  );
+  return $schema;
+}
+
+/**
+ * Implementation of hook_enable().
+ */
+function searchlight_enable() {
+  searchlight_invalidate_index();
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function searchlight_install() {
+  drupal_install_schema('searchlight');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function searchlight_uninstall() {
+  variable_del('searchlight_views');
+  variable_del('searchlight_backend');
+  db_query("DELETE FROM {variable} WHERE name LIKE 'searchlight_backend_%'");
+  drupal_uninstall_schema('searchlight');
+}

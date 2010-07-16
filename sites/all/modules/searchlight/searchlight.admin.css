@@ -1,0 +1,56 @@
+.searchlight-admin-info {
+  float:left;
+  margin-bottom:10px;
+  }
+
+.searchlight-admin-info label { display:block; }
+
+.searchlight-admin-name {
+  font-size:28px;
+  line-height:40px;
+  }
+
+.datasource-index {
+  float:right;
+  margin-bottom:10px;
+
+  padding:9px;
+  background:#f4f8f8;
+  border:1px solid #ddd;
+  }
+
+  .datasource-index strong { font-size:16px; }
+  .datasource-index small { font-size:11px; }
+
+/**
+ * Environment facet settings =================================================
+ */
+.environment-settings { position:relative; }
+
+.environment-settings-form {
+  display:none;
+  position:absolute;
+  right:0px;
+  top:100%;
+  z-index:1;
+
+  padding:10px;
+  background:#f8f8f8;
+  min-width:160px;
+
+  -moz-box-shadow:#ccc 0px 2px 3px;
+  -webkit-box-shadow:#ccc 0px 2px 3px;
+  }
+
+  tr.odd .environment-settings .form-item,
+  tr.even .environment-settings .form-item { margin:5px 0px; }
+
+.environment-settings-link {
+  display:block;
+  padding:5px 10px;
+  }
+
+.environment-settings .settings-active {
+  background:#f8f8f8;
+  color:#222;
+  }
