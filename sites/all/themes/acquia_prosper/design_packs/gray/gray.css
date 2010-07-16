@@ -13,13 +13,13 @@ body {
 /* Links */
 a:link,
 a:visited {
-  color: #af0000;
+  color: #369;
 }
 
 a:hover,
 a:focus,
 a:active {
-  color: #369;
+  color: #af0000;
 }
 
 /* Headings */
