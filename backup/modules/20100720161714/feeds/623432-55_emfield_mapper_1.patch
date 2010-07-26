@@ -1,0 +1,175 @@
+Index: mappers/emfield.inc
+===================================================================
+RCS file: mappers/emfield.inc
+diff -N mappers/emfield.inc
+--- /dev/null	1 Jan 1970 00:00:00 -0000
++++ mappers/emfield.inc	11 Mar 2010 10:05:39 -0000
+@@ -0,0 +1,59 @@
++<?php
++// $Id$
++
++/**
++ * @file
++ * On behalf implementation of Feeds mapping API for emfield.module (Embedded
++ * Media Field).
++ */
++
++/**
++ * Implementation of hook_feeds_node_processor_targets_alter().
++ *
++ * @see FeedsNodeProcessor::getMappingTargets().
++ */
++function emfield_feeds_node_processor_targets_alter(&$targets, $content_type) {
++  $info = content_types($content_type);
++  $fields = array();
++  if (isset($info['fields']) && count($info['fields'])) {
++    foreach ($info['fields'] as $field_name => $field) {
++      if (in_array($field['type'], array('emvideo', 'emaudio', 'emimage'))) {
++        $fields[$field_name] = isset($field['widget']['label']) ? $field['widget']['label'] : $field_name;
++      }
++    }
++  }
++  foreach ($fields as $k => $name) {
++    $targets[$k] = array(
++      'name' => $name,
++      'callback' => 'emfield_feeds_set_target',
++      'description' => t('The Embedded !name field of the node. Map a URL of a page containing media to this field.', array('!name' => $name)),
++    );
++  }
++}
++
++/**
++ * Callback for mapping. Here is where the actual mapping happens.
++ *
++ * When the callback is invoked, $target contains the name of the field the
++ * user has decided to map to and $value contains the value of the feed item
++ * element the user has picked as a source.
++ */
++function emfield_feeds_set_target(&$node, $target, $value) {
++  $field = isset($node->$target) ? $node->$target : array();
++
++  // Handle multiple value fields.
++  if (is_array($value)) {
++    $i = 0;
++    foreach ($value as $v) {
++      if (!is_array($v) && !is_object($v)) {
++        $field[$i]['embed'] = $v;
++      }
++      $i++;
++    }
++  }
++  else {
++    $field[0]['embed'] = $value;
++  }
++
++  $node->$target = $field;
++}
+\ No newline at end of file
+Index: tests/feeds_mapper_emfield.test
+===================================================================
+RCS file: tests/feeds_mapper_emfield.test
+diff -N tests/feeds_mapper_emfield.test
+--- /dev/null	1 Jan 1970 00:00:00 -0000
++++ tests/feeds_mapper_emfield.test	11 Mar 2010 10:05:39 -0000
+@@ -0,0 +1,91 @@
++<?php
++// $Id$
++
++/**
++ * @file
++ * Test case for simple CCK field mapper mappers/emfield.inc.
++ */
++
++require_once(drupal_get_path('module', 'feeds') . '/tests/feeds_mapper_test.inc');
++
++/**
++ * Class for testing Feeds <em>emfield</em> mapper.
++ */
++class FeedsMapperEmfieldTestCase extends FeedsMapperTestCase {
++
++  public static function getInfo() {
++    return array(
++      'name' => t('Mapper: Emfield'),
++      'description' => t('Test Feeds Mapper support for Emfield CCK fields. <strong>Requires CCK module and Emfield module</strong>.'),
++      'group' => t('Feeds'),
++    );
++  }
++
++  /**
++   * Set up the test.
++   */
++  function setUp() {
++    // Call parent setup with required modules.
++    parent::setUp('feeds', 'feeds_ui', 'ctools', 'content', 'emfield', 'emvideo');
++
++    // Create user and login.
++    $this->drupalLogin($this->drupalCreateUser(
++        array(
++          'administer content types',
++          'administer feeds',
++          'administer nodes',
++          'administer site configuration'
++        )
++    ));
++  }
++
++  /**
++   * Basic test loading a doulbe entry CSV file.
++   */
++  function test() {
++
++  	// Create content type.
++  	$typename = $this->createContentType(NULL, array(
++      'video' => array(
++        'type' => 'emvideo',
++  	    'widget' => 'emvideo_textfields',
++  	  ),
++    ));
++
++    // Create and configure importer.
++    $this->createFeedConfiguration('Emfield CSV', 'csv');
++    $this->setSettings('csv', NULL, array('content_type' => '','import_period' => FEEDS_SCHEDULE_NEVER,));
++    $this->setPlugin('csv', 'FeedsFileFetcher');
++    $this->setPlugin('csv', 'FeedsCSVParser');
++    $this->setSettings('csv', 'FeedsNodeProcessor', array('content_type' => $typename));
++    $this->addMappings('csv', array(
++      array(
++        'source' => 'title',
++        'target' => 'title',
++      ),
++      array(
++        'source' => 'created',
++        'target' => 'created',
++      ),
++      array(
++        'source' => 'body',
++        'target' => 'body',
++      ),
++      array(
++        'source' => 'video',
++        'target' => 'field_video',
++      ),
++    ));
++
++    // Import CSV file.
++    $this->importFile('csv', $this->absolutePath() .'/tests/feeds/emfield.csv');
++    $this->assertText('Created 2 '. $typename .' nodes.');
++
++    // Check the two imported files.
++    $this->drupalGet('node/1/edit');
++    $this->assertCCKFieldValue('video', 'http://www.youtube.com/watch?v=gpkhANg919Y');
++
++    $this->drupalGet('node/2/edit');
++    $this->assertCCKFieldValue('video', 'http://www.youtube.com/watch?v=ewAGXAeCXJY');
++  }
++}
+Index: tests/feeds/emfield.csv
+===================================================================
+RCS file: tests/feeds/emfield.csv
+diff -N tests/feeds/emfield.csv
+--- /dev/null	1 Jan 1970 00:00:00 -0000
++++ tests/feeds/emfield.csv	11 Mar 2010 10:05:39 -0000
+@@ -0,0 +1,3 @@
++"guid","title","created","video","body"
++1,"Lorem ipsum",1251936720,"http://www.youtube.com/watch?v=gpkhANg919Y","Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat."
++2,"Ut wisi enim ad minim veniam",1251932360,"http://www.youtube.com/watch?v=ewAGXAeCXJY","Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat."

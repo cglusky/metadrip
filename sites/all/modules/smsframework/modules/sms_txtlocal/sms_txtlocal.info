@@ -1,0 +1,22 @@
+; $Id: sms_txtlocal.info,v 1.1.2.1 2010/06/25 17:32:01 aspope Exp $
+;
+; SMS Framework gateway module for Txtlocal (www.txtlocal.com)
+;
+; To make inbound work you must configure txtlocal to send the messages to a
+; URL: http(s)://yourhost.example.com/sms/txtlocal/receiver
+;
+; Please also read the comment header in sms_txtlocal.module.
+;
+name = "Txtlocal"
+description = "Gateway: Txtlocal"
+package = SMS Framework
+version = 6.x-1.x-dev
+core = 6.x
+dependencies[] = sms
+
+; Information added by drupal.org packaging script on 2010-07-11
+version = "6.x-1.x-dev"
+core = "6.x"
+project = "smsframework"
+datestamp = "1278835734"
+

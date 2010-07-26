@@ -12,7 +12,7 @@ class SearchlightBackendSolr extends SearchlightBackend {
       'host' => 'localhost',
       'port' => 8983,
       'path' => '/solr',
-      'jar_path' => '/usr/local/apache-solr-1.4.0/example',
+      'jar_path' => '/Applications/solr/example',
       'item_limit' => 100,
     );
   }

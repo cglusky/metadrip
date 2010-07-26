@@ -72,6 +72,7 @@
       <field name="users_name"  type="string" indexed="true" stored="true" multiValued="false"/>
       <field name="users_uid"  type="integer" indexed="true" stored="true" multiValued="false"/>
       <field name="node_type"  type="string" indexed="true" stored="true" multiValued="false"/>
+      <field name="term_data_tid_calais_40"  type="integer" indexed="true" stored="true" multiValued="true"/>
       <field name="nid"  type="integer" indexed="true" stored="true" multiValued="false"/>
    </fields>
  <uniqueKey>nid</uniqueKey>

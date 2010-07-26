@@ -1,0 +1,14 @@
+; $Id $
+name = Calais Tag Modifier
+description = "Provides functionality for Blacklist, Renaming, etc."
+package = "Calais"
+core = 6.x
+dependencies[] = calais
+
+
+; Information added by drupal.org packaging script on 2009-12-14
+version = "6.x-3.4"
+core = "6.x"
+project = "opencalais"
+datestamp = "1260828679"
+

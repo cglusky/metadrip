@@ -1,0 +1,14 @@
+; $Id: sms_devel.info,v 1.1.2.1 2010/06/25 17:32:00 aspope Exp $
+name = Devel
+description = Development and testing tools to assist module/site development.
+core = 6.x
+version = 6.x-1.x-dev
+package = SMS Framework
+dependencies[] = sms
+
+; Information added by drupal.org packaging script on 2010-07-11
+version = "6.x-1.x-dev"
+core = "6.x"
+project = "smsframework"
+datestamp = "1278835734"
+

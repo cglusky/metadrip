@@ -1,0 +1,40 @@
+; $Id: CHANGELOG.txt,v 1.1.2.2 2010/06/25 17:00:06 aspope Exp $
+
+This file will be replaced when a stable release is cut.
+
+Changes to SMS Framework core module (sms) and complimentary module set
+
+See the CHANGELOG.txt in each complimentary module for module-specific changes.
+
+-----------------------------------------------------------
+CHANGES SINCE 6.x-1.0
+-----------------------------------------------------------
+- Added constants for message direction codes, message status codes, gateway response codes.
+- Added function: sms_dir() to help render the sms direction constants.
+- Modified sms_send()
+    - Now passes $gateway and $options to sms_handle_result()
+    - Added post-process hook: hook_sms_send_process(). Hook name chosen to preserve backward-compatibility, since hook_sms_send() does not implement the standard $op values ('pre process', 'process', 'post process').
+- Modified sms_handle_result()
+    - Added $gateway and $options to @params, with default values.
+    - Logging failed messages is now optional, as per admin setting, enabled by default.
+    - Return either a full response array if an option is given in $options, or the usual TRUE/FALSE. Response array includes message info, gateway array, status values from the gateway and the associated SMS Framework gateway status code.
+- Modified sms_validate_number()
+    - Added additional formatting to catch error cases more easily.
+    - Added hook_sms_validate() with pre-process, process and post-process operations.
+- Added function: sms_receipt() that provides hook_sms_receipt()
+- Removed function: sms_formatter(). This function is redundant, since validation functions will format the number.
+- sms_send_form() will only include the ruleset (country) selector if it needs to (if there are rulesets and/or admin setting enabled). Default is 'auto-select'.
+- sms_send_form_validate(): Made it call the main validation function sms_validate_number() and carry any number manipulation made by the validation methods.
+- Added include file: sms.admin.inc
+- Moved admin settings form functions to sms.admin.inc file
+- Added a core admin settings form
+- Added admin setting for sms_send_form with ruleset (country) selector on/off and configurable field title.
+
+- Added module: sms_actions
+- Added module: sms_devel
+- Added module: sms_txtlocal
+- Added module: sms_valid
+
+TODO
+- What if the gateway always returns a message id code? We should be able to capture this.
+- sms_send_form() to show ruleset selector only the form previously validated false. Requires some Drupal form tricks.
